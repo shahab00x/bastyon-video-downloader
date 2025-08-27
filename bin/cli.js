@@ -2,13 +2,13 @@
 import { argv, exit } from 'node:process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseInput, fetchVideoMeta, selectFile, downloadFile, deriveOutputName } from '../lib/index.js';
+import { resolveInput, fetchVideoMeta, selectFile, downloadFile, deriveOutputName } from '../lib/index.js';
 
 function printHelp() {
   console.log(`bastyon-video-downloader (bvd)
 
 Usage:
-  bvd <url|peertube://host/uuid> [options]
+  bvd <bastyon-post-url|peertube-url|peertube://host/uuid> [options]
 
 Options:
   -o, --output <path>     Output file path (default: derived from title)
@@ -61,9 +61,9 @@ async function main() {
   }
 
   try {
-    const { host, id } = parseInput(inputUrl);
+    const { host, id } = await resolveInput(inputUrl);
     if (!host || !id) {
-      throw new Error('Unable to parse input. Expect peertube://host/uuid or PeerTube URL');
+      throw new Error('Unable to resolve input. Expect Bastyon post URL, peertube://host/uuid or PeerTube URL');
     }
 
     const meta = await fetchVideoMeta(host, id);

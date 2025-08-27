@@ -3,6 +3,7 @@
 Download Bastyon/PeerTube videos from the command line.
 
 Supports:
+- Bastyon post URLs like `https://bastyon.com/post?s=<post-hash>` (auto-resolves to PeerTube)
 - `peertube://host/uuid` (Bastyon internal link format)
 - Standard PeerTube URLs, e.g.:
   - `https://peertube.example/videos/watch/UUID`
@@ -26,7 +27,7 @@ Optionally, you can add an npm script in your root package.json to simplify runn
 ## Usage
 
 ```bash
-bvd <url|peertube://host/uuid> [options]
+bvd <bastyon-post-url|peertube-url|peertube://host/uuid> [options]
 
 Options:
   -o, --output <path>     Output file path (default: derived from title)
@@ -38,6 +39,9 @@ Options:
 Examples:
 
 ```bash
+# From a Bastyon post URL (resolves to PeerTube automatically)
+node ./bastyon-video-downloader/bin/cli.js "https://bastyon.com/post?s=<HASH>"
+
 # From Bastyon link format
 node ./bastyon-video-downloader/bin/cli.js "peertube://videos.pocketnet.app/UUID"
 
@@ -58,13 +62,19 @@ The downloader:
 You can also use it programmatically:
 
 ```js
-import { parseInput, fetchVideoMeta, selectFile, downloadFile, deriveOutputName } from './bastyon-video-downloader/lib/index.js';
+import { resolveInput, resolveBastyonPost, fetchVideoMeta, selectFile, downloadFile, deriveOutputName } from './bastyon-video-downloader/lib/index.js';
 
-const { host, id } = parseInput('peertube://videos.pocketnet.app/UUID');
+// 1) Direct PeerTube or peertube:// link
+const { host, id } = await resolveInput('peertube://videos.pocketnet.app/UUID');
 const meta = await fetchVideoMeta(host, id);
 const chosen = selectFile(meta, { quality: 1080, audioOnly: false });
 const out = deriveOutputName(meta, chosen);
 await downloadFile(chosen.fileUrl, out);
+
+// 2) Bastyon post URL -> resolve to PeerTube
+const { host: h2, id: id2 } = await resolveInput('https://bastyon.com/post?s=<HASH>');
+const meta2 = await fetchVideoMeta(h2, id2);
+```
 ```
 
 ## Notes
@@ -72,3 +82,4 @@ await downloadFile(chosen.fileUrl, out);
 - Many PeerTube servers expose multiple files/playlists; this tool prefers HTTPS MP4s and highest resolution under the chosen quality.
 - Resume is not implemented yet; partial `.part` files are removed on error.
 - If a server only provides HLS (m3u8) and no direct file URLs, this tool will likely not find a downloadable candidate.
+- Bastyon post resolution uses the public RPC at `https://5.pocketnet.app:8899/rpc/` by default.
