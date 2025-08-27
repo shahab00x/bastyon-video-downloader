@@ -22,6 +22,7 @@
       background: radial-gradient(1200px 800px at 10% -10%, #183054 0%, var(--bg) 60%);
       color: var(--text);
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding-bottom: 200px;
     }
     .wrap { width: min(880px, 92vw); }
     .card {
@@ -57,22 +58,28 @@
     .hidden { display: none; }
     .error { color: var(--danger); font-size: 13px; margin-top: 8px; white-space: pre-wrap; }
 
-    .shots { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-    .shots img { max-width: calc(50% - 5px); height: auto; border-radius: 10px; border: 1px solid var(--border); }
+    .shots { display: flex; gap: 10px; margin-bottom: 12px; flex-direction: column; align-items: center; }
+    .shots img { width: 100%; max-width: 400px; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+
+    @media (min-width: 768px) {
+      .shots { flex-direction: row; }
+      .shots img { max-width: calc(50% - 5px); }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="shots">
+      <img src="/screenshots/sharebutton.png" alt="Bastyon share button screenshot" />
+      <img src="/screenshots/copylink.png" alt="Bastyon copy link screenshot" />
+    </div>
+
     <div class="card">
-      <div class="shots">
-        <img src="/screenshots/sharebutton.png" alt="Bastyon share button screenshot" />
-        <img src="/screenshots/copylink.png" alt="Bastyon copy link screenshot" />
-      </div>
       <h1>Bastyon Video Downloader</h1>
-      <p class="sub">Paste a Bastyon post URL (https://bastyon.com/post?s=...) or a PeerTube link, then pick a quality to download.</p>
+      <p class="sub">Paste a Bastyon post URL or a PeerTube link, then pick a quality to download.</p>
 
       <div class="row">
-        <input id="url" type="url" placeholder="https://bastyon.com/post?s=..." />
+        <input id="url" type="url" placeholder="https://bastyon.com/index?v=..." />
         <button id="resolve" class="primary">Resolve</button>
       </div>
 
