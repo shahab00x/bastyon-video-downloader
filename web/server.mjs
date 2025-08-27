@@ -143,7 +143,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Web UI: http://localhost:${PORT}`);
+  console.log(`Web UI: http://0.0.0.0:${PORT} (accessible from network)`);
   console.log(`Proxying Bastyon RPC at /rpc/ -> ${RPC_TARGET}`);
 });
