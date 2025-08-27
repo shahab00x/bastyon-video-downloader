@@ -194,7 +194,6 @@ const $progressText = el('progressText');
 const $error = el('error');
 const $dlLink = el('dlLink');
 const $copyLink = el('copyLink');
-const $useProxy = el('useProxy');
 
 let current = { host: null, id: null, meta: null, candidates: [] };
 
@@ -238,11 +237,7 @@ function fillQualities(candidates) {
 }
 
 function buildDownloadLink(fileUrl) {
-  if (!fileUrl) return '';
-  if ($useProxy && $useProxy.checked) {
-    return `${location.origin}/proxy?url=${encodeURIComponent(fileUrl)}`;
-  }
-  return fileUrl;
+  return fileUrl || '';
 }
 
 function refreshLink() {
@@ -299,11 +294,6 @@ $quality.addEventListener('change', () => {
   refreshLink();
 });
 
-if ($useProxy) {
-  $useProxy.addEventListener('change', () => {
-    refreshLink();
-  });
-}
 
 $copyLink && $copyLink.addEventListener('click', async () => {
   const text = ($dlLink && $dlLink.value) ? $dlLink.value.trim() : '';
