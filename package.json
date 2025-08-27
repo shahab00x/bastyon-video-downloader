@@ -1,0 +1,22 @@
+{
+  "name": "bastyon-video-downloader",
+  "version": "0.1.0",
+  "description": "CLI and library to download Bastyon/PeerTube videos by peertube://host/uuid or watch URLs",
+  "type": "module",
+  "bin": {
+    "bvd": "./bin/cli.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "bastyon",
+    "pocketnet",
+    "peertube",
+    "downloader",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}
