@@ -37,8 +37,9 @@ function extractBastyonPostTx(input) {
     const u = new URL(input);
     const host = (u.host || '').toLowerCase();
     const isBastyon = host.endsWith('bastyon.com') || host.endsWith('pocketnet.app');
-    const isPost = u.pathname.replace(/\/+$/, '') === '/post';
-    if (!isBastyon || !isPost) return null;
+    const p = u.pathname.replace(/\/+$/, '');
+    const isAllowedPath = p === '/post' || p === '/index';
+    if (!isBastyon || !isAllowedPath) return null;
     return u.searchParams.get('s') || u.searchParams.get('v') || u.searchParams.get('i') || null;
   } catch {
     return null;
