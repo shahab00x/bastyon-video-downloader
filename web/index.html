@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bastyon Video Downloader</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b1020;
+      --panel: #121a2b;
+      --text: #e9eef6;
+      --muted: #9cb0c9;
+      --accent: #3da5ff;
+      --accent-2: #7bda7f;
+      --danger: #ff5c7a;
+      --border: #22304a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -10%, #183054 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    }
+    .wrap { width: min(880px, 92vw); }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 20px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+    }
+    h1 { margin: 0 0 4px; font-size: 22px; }
+    p.sub { margin: 0 0 18px; color: var(--muted); }
+
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .row + .row { margin-top: 12px; }
+
+    input[type="url"], select, button {
+      background: #0e1627; border: 1px solid var(--border); color: var(--text);
+      padding: 12px 12px; border-radius: 10px; font-size: 14px; outline: none;
+    }
+    input[type="url"]::placeholder { color: #6e85a2; }
+    input[type="url"] { width: 100%; }
+    select { min-width: 220px; }
+
+    button.primary { background: linear-gradient(180deg, #2a7aff, #0f59da); border-color: #0f59da; }
+    button.secondary { background: linear-gradient(180deg, #25b85f, #0d8a3b); border-color: #0d8a3b; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    .meta { display: grid; grid-template-columns: 80px 1fr; gap: 14px; align-items: center; margin-top: 14px; }
+    .thumb { width: 80px; height: 45px; border-radius: 8px; object-fit: cover; background: #0e1627; border: 1px solid var(--border); }
+    .title { font-weight: 600; }
+    .desc { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    progress { width: 100%; height: 12px; }
+    .hidden { display: none; }
+    .error { color: var(--danger); font-size: 13px; margin-top: 8px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Bastyon Video Downloader</h1>
+      <p class="sub">Paste a Bastyon post URL (https://bastyon.com/post?s=...) or a PeerTube link, then pick a quality to download.</p>
+
+      <div class="row">
+        <input id="url" type="url" placeholder="https://bastyon.com/post?s=..." />
+        <button id="resolve" class="primary">Resolve</button>
+      </div>
+
+      <div id="info" class="meta hidden">
+        <img id="thumb" class="thumb" alt="thumbnail" />
+        <div>
+          <div id="title" class="title"></div>
+          <div id="desc" class="desc"></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <select id="quality" disabled>
+          <option>Loading...</option>
+        </select>
+        <button id="download" class="secondary" disabled>Download</button>
+      </div>
+
+      <div id="progressWrap" class="hidden" style="margin-top:12px">
+        <progress id="progress" max="100" value="0"></progress>
+        <div id="progressText" class="desc">0%</div>
+      </div>
+
+      <div id="error" class="error"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./web.js"></script>
+</body>
+</html>

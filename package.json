@@ -9,6 +9,10 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "scripts": {
+    "web": "node ./web/server.mjs",
+    "start": "node ./web/server.mjs"
+  },
   "keywords": [
     "bastyon",
     "pocketnet",
