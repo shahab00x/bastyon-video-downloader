@@ -192,6 +192,9 @@ const $progressWrap = el('progressWrap');
 const $progress = el('progress');
 const $progressText = el('progressText');
 const $error = el('error');
+const $dlLink = el('dlLink');
+const $copyLink = el('copyLink');
+const $useProxy = el('useProxy');
 
 let current = { host: null, id: null, meta: null, candidates: [] };
 
@@ -234,12 +237,38 @@ function fillQualities(candidates) {
   $quality.disabled = $quality.options.length === 0;
 }
 
+function buildDownloadLink(fileUrl) {
+  if (!fileUrl) return '';
+  if ($useProxy && $useProxy.checked) {
+    return `${location.origin}/proxy?url=${encodeURIComponent(fileUrl)}`;
+  }
+  return fileUrl;
+}
+
+function refreshLink() {
+  const fileUrl = $quality && $quality.value ? $quality.value : '';
+  const link = buildDownloadLink(fileUrl);
+  if ($dlLink) {
+    if (link) {
+      $dlLink.value = link;
+      $dlLink.disabled = false;
+      if ($copyLink) $copyLink.disabled = false;
+    } else {
+      $dlLink.value = '';
+      $dlLink.disabled = true;
+      if ($copyLink) $copyLink.disabled = true;
+    }
+  }
+}
+
 $resolve.addEventListener('click', async () => {
   setError('');
   $info.classList.add('hidden');
   $quality.disabled = true;
   $download.disabled = true;
   $progressWrap.classList.add('hidden');
+  if ($dlLink) { $dlLink.value = ''; $dlLink.disabled = true; }
+  if ($copyLink) { $copyLink.disabled = true; }
   try {
     setLoading(true);
     const { host, id } = await resolveInput($url.value.trim());
@@ -258,6 +287,7 @@ $resolve.addEventListener('click', async () => {
     current.candidates = cand;
     fillQualities(cand);
     $download.disabled = $quality.disabled;
+    refreshLink();
   } catch (e) {
     setError(e && e.message ? e.message : String(e));
   } finally {
@@ -265,6 +295,35 @@ $resolve.addEventListener('click', async () => {
   }
 });
 
+$quality.addEventListener('change', () => {
+  refreshLink();
+});
+
+if ($useProxy) {
+  $useProxy.addEventListener('change', () => {
+    refreshLink();
+  });
+}
+
+$copyLink && $copyLink.addEventListener('click', async () => {
+  const text = ($dlLink && $dlLink.value) ? $dlLink.value.trim() : '';
+  if (!text) return;
+  const prev = $copyLink.textContent;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      $dlLink.focus();
+      $dlLink.select();
+      document.execCommand && document.execCommand('copy');
+    }
+    $copyLink.textContent = 'Copied';
+  } catch (e) {
+    $copyLink.textContent = 'Copy failed';
+  } finally {
+    setTimeout(() => { $copyLink.textContent = prev; }, 1200);
+  }
+});
 $download.addEventListener('click', async () => {
   setError('');
   $progressWrap.classList.remove('hidden');

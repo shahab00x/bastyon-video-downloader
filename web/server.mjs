@@ -91,6 +91,28 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // Serve screenshots directory: /screenshots/*
+    if (req.url && req.url.startsWith('/screenshots/')) {
+      const reqPath = req.url.replace(/^\/screenshots\//, '');
+      const baseDir = path.join(__dirname, '..', 'screenshots');
+      const fsPath = path.join(baseDir, reqPath);
+      if (!fsPath.startsWith(baseDir)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
+      const st = await fsp.stat(fsPath).catch(() => null);
+      if (!st || !st.isFile()) {
+        res.writeHead(404);
+        res.end('Not Found');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': contentType(fsPath) });
+      const data = await fsp.readFile(fsPath);
+      res.end(data);
+      return;
+    }
+
     // Static files
     let reqPath = req.url || '/';
     if (reqPath === '/') reqPath = '/index.html';

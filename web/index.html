@@ -56,11 +56,18 @@
     progress { width: 100%; height: 12px; }
     .hidden { display: none; }
     .error { color: var(--danger); font-size: 13px; margin-top: 8px; white-space: pre-wrap; }
+
+    .shots { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .shots img { max-width: calc(50% - 5px); height: auto; border-radius: 10px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
+      <div class="shots">
+        <img src="/screenshots/sharebutton.png" alt="Bastyon share button screenshot" />
+        <img src="/screenshots/copylink.png" alt="Bastyon copy link screenshot" />
+      </div>
       <h1>Bastyon Video Downloader</h1>
       <p class="sub">Paste a Bastyon post URL (https://bastyon.com/post?s=...) or a PeerTube link, then pick a quality to download.</p>
 
@@ -82,6 +89,17 @@
           <option>Loading...</option>
         </select>
         <button id="download" class="secondary" disabled>Download</button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <input id="dlLink" type="url" placeholder="Direct download link appears here" disabled />
+        <button id="copyLink" class="primary" disabled>Copy link</button>
+      </div>
+      <div style="margin-top:6px">
+        <label style="font-size:13px;color:var(--muted)">
+          <input type="checkbox" id="useProxy" />
+          Use local proxy link (http://localhost:5173/proxy?url=...) for some download managers
+        </label>
       </div>
 
       <div id="progressWrap" class="hidden" style="margin-top:12px">
