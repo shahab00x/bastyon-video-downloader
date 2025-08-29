@@ -65,10 +65,11 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Generic proxy for cross-origin downloads: /proxy?url=ENCODED
+    // Generic proxy for cross-origin downloads: /proxy?url=ENCODED[&filename=NAME]
     if (req.url && req.url.startsWith('/proxy')) {
       const u = new URL(req.url, `http://localhost:${PORT}`);
       const target = u.searchParams.get('url');
+      const filename = u.searchParams.get('filename');
       if (!target) {
         res.writeHead(400);
         res.end('Missing url');
@@ -80,6 +81,12 @@ const server = http.createServer(async (req, res) => {
       res.statusCode = upstream.status;
       res.setHeader('Content-Type', ct);
       if (cl) res.setHeader('Content-Length', cl);
+      if (filename) {
+        // Instruct browser to download with suggested filename
+        // Sanitize filename to avoid CRLF/header injection
+        const safe = String(filename).replace(/[\r\n]/g, ' ').trim();
+        res.setHeader('Content-Disposition', `attachment; filename="${safe}"`);
+      }
       const body = upstream.body;
       if (body) {
         const nodeReadable = Readable.fromWeb(body);

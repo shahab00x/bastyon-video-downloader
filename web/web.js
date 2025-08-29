@@ -111,7 +111,7 @@ function buildCandidates(meta) {
   const candidates = [];
   const pushFile = (f) => {
     if (!f) return;
-    const fileUrl = f.fileUrl || f.url || f.src || null;
+    const fileUrl = f.fileDownloadUrl || f.fileUrl || f.url || f.src || null;
     const mimeType = f.mimeType || f.type || '';
     const size = f.size || f.filesize || null;
     const height = (f.resolution && (f.resolution.id || f.resolution.label)) || f.height || null;
@@ -316,18 +316,14 @@ $copyLink && $copyLink.addEventListener('click', async () => {
 });
 $download.addEventListener('click', async () => {
   setError('');
-  $progressWrap.classList.remove('hidden');
-  $progress.value = 0; $progressText.textContent = '0%';
+  // Hide progress UI because the browser's download manager will handle it
+  $progressWrap.classList.add('hidden');
   try {
     const fileUrl = $quality.value;
     if (!fileUrl) throw new Error('Choose a quality first');
-    const chosen = current.candidates.find(c => c.fileUrl === fileUrl) || { fileUrl };
-    const name = deriveOutputName(current.meta || {}, chosen);
-    await downloadWithProgress(fileUrl, name, (done, total) => {
-      const pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
-      $progress.value = pct;
-      $progressText.textContent = `${pct}% (${humanSize(done)}${total ? ' / ' + humanSize(total) : ''})`;
-    });
+    // Prefer direct download URL; remote server should send Content-Disposition
+    // Use same-tab navigation to avoid opening a streaming preview tab
+    window.location.href = fileUrl;
   } catch (e) {
     setError(e && e.message ? e.message : String(e));
   }
